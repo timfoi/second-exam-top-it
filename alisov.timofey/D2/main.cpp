@@ -1,5 +1,23 @@
 #include <iostream>
+namespace alisov
+{
+  bool resize(char *&data, size_t size, size_t &cap)
+  {
+    size_t new_cap = (cap == 0) ? 1 : cap * 2;
 
+    char *tmp = new (std::nothrow) char[new_cap];
+    if (!tmp)
+      return false;
+
+    for (size_t i = 0; i < size; ++i)
+      tmp[i] = data[i];
+
+    delete[] data;
+    data = tmp;
+    cap = new_cap;
+    return true;
+  }
+}
 int main(int argc, char *argv[])
 {
   bool reverse = false;
@@ -33,20 +51,11 @@ int main(int argc, char *argv[])
 
     if (size == cap)
     {
-      size_t new_cap = (cap == 0) ? 1 : cap * 2;
-      char *tmp = new (std::nothrow) char[new_cap];
-      if (!tmp)
+      if (!alisov::resize(data, size, cap))
       {
         delete[] data;
         return 0;
       }
-
-      for (size_t i = 0; i < size; ++i)
-        tmp[i] = data[i];
-
-      delete[] data;
-      data = tmp;
-      cap = new_cap;
     }
     data[size++] = ch;
   }
@@ -58,8 +67,16 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  size_t *counts = new size_t[size];
-  char *chars = new char[size];
+  size_t *counts = new (std::nothrow) size_t[size];
+  char *chars = new (std::nothrow) char[size];
+
+  if (!counts || !chars)
+  {
+    delete[] data;
+    delete[] counts;
+    delete[] chars;
+    return 0;
+  }
 
   size_t groups = 0;
 
