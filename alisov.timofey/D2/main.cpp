@@ -20,4 +20,13 @@ int main(int argc, char *argv[])
       return 1;
     }
   }
+  char *ans = nullptr;
+  size_t len = 0, cap = 0;
+  char ch;
+  while (std::cin.get(ch))
+  {
+    if (len == cap)
+    {
+    }
+  }
 }
