@@ -20,13 +20,76 @@ int main(int argc, char *argv[])
       return 1;
     }
   }
-  char *ans = nullptr;
-  size_t len = 0, cap = 0;
+  char *data = nullptr;
+  size_t size = 0;
+  size_t cap = 0;
+
   char ch;
+
   while (std::cin.get(ch))
   {
-    if (len == cap)
+    if (std::isspace(static_cast< unsigned char >(ch)))
+      continue;
+
+    if (size == cap)
     {
+      size_t new_cap = (cap == 0) ? 1 : cap * 2;
+      char *tmp = new (std::nothrow) char[new_cap];
+      if (!tmp)
+      {
+        delete[] data;
+        return 0;
+      }
+
+      for (size_t i = 0; i < size; ++i)
+        tmp[i] = data[i];
+
+      delete[] data;
+      data = tmp;
+      cap = new_cap;
     }
+    data[size++] = ch;
   }
+
+  if (size == 0)
+  {
+    std::cout << '\n';
+    delete[] data;
+    return 0;
+  }
+
+  size_t *counts = new size_t[size];
+  char *chars = new char[size];
+
+  size_t groups = 0;
+
+  for (size_t i = 0; i < size;)
+  {
+    char current = data[i];
+    size_t count = 0;
+
+    while (i < size && data[i] == current)
+    {
+      ++count;
+      ++i;
+    }
+
+    counts[groups] = count;
+    chars[groups] = current;
+    ++groups;
+  }
+  if (!reverse)
+  {
+    for (size_t i = 0; i < groups; ++i)
+      std::cout << counts[i] << " " << chars[i] << "\n";
+  }
+  else
+  {
+    for (size_t i = groups; i > 0; --i)
+      std::cout << counts[i - 1] << " " << chars[i - 1] << "\n";
+  }
+
+  delete[] data;
+  delete[] counts;
+  delete[] chars;
 }
